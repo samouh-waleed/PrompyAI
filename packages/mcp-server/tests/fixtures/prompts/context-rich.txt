@@ -1,0 +1,1 @@
+The UserCard component at @src/components/UserCard.tsx is not showing the user's avatar. The Avatar component from @src/components/ui/Avatar.tsx expects a `src` prop but UserCard is passing `imageUrl` instead. Fix the prop name in UserCard to match what Avatar expects. Currently it renders a grey placeholder; after the fix it should show the actual user photo.

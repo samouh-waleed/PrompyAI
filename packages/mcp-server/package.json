@@ -1,0 +1,58 @@
+{
+  "name": "prompyai-mcp",
+  "version": "0.1.0",
+  "description": "Context-aware prompt intelligence MCP server for Claude CLI — scores your prompts against your real codebase",
+  "type": "module",
+  "bin": {
+    "prompyai": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node esbuild.config.js && tsc --emitDeclarationOnly",
+    "dev": "tsx watch src/mcp/server.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "glob": "^10.4.0",
+    "simple-git": "^3.27.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "vitest": "^2.1.0"
+  },
+  "keywords": [
+    "mcp",
+    "claude",
+    "prompt",
+    "scoring",
+    "ai",
+    "developer-tools"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samouh-waleed/PrompyAI.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://github.com/samouh-waleed/PrompyAI#readme",
+  "bugs": {
+    "url": "https://github.com/samouh-waleed/PrompyAI/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
