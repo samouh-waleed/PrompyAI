@@ -16,6 +16,7 @@ await build({
     '@anthropic-ai/sdk',
     'zod',
     'glob',
+    'typescript',
   ],
   banner: {
     // cli.ts needs the shebang for bin usage
