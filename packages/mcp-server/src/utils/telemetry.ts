@@ -9,7 +9,7 @@ export interface TelemetryEvent {
   properties?: Record<string, string | number | boolean>;
 }
 
-const TELEMETRY_ENDPOINT = process.env.PROMPYAI_TELEMETRY_URL ?? 'https://api.prompyai.dev/telemetry';
+const TELEMETRY_ENDPOINT = process.env.PROMPYAI_TELEMETRY_URL ?? 'https://prompyai-telemetry.prompyai.workers.dev/telemetry';
 const BATCH_INTERVAL_MS = 30_000; // Flush every 30s
 const MAX_BATCH_SIZE = 50;
 const VERSION = '0.1.0';

@@ -1,0 +1,8 @@
+name = "prompyai-telemetry"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "prompyai-telemetry"
+database_id = "28efc76c-9ac9-424e-a837-b97d6eb22841"
