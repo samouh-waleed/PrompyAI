@@ -44,7 +44,7 @@ Requires Node.js 20+.
 ## Setup with Claude CLI
 
 ```bash
-claude mcp add prompyai -- prompyai serve
+claude mcp add prompyai -- npx prompyai-mcp serve
 ```
 
 Or add to `~/.claude/claude_desktop_config.json`:
@@ -53,8 +53,8 @@ Or add to `~/.claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "prompyai": {
-      "command": "prompyai",
-      "args": ["serve"]
+      "command": "npx",
+      "args": ["prompyai-mcp", "serve"]
     }
   }
 }

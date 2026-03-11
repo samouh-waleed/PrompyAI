@@ -32,21 +32,20 @@ Ensure existing vitest tests pass.
 ## Quick Start
 
 ```bash
-# Install
+# Zero-install (recommended)
+claude mcp add prompyai -- npx prompyai-mcp serve
+
+# Or install globally first
 npm install -g prompyai-mcp
-
-# Add to Claude CLI
 claude mcp add prompyai -- prompyai serve
-
-# Or add to claude_desktop_config.json
 ```
 
 ```json
 {
   "mcpServers": {
     "prompyai": {
-      "command": "prompyai",
-      "args": ["serve"]
+      "command": "npx",
+      "args": ["prompyai-mcp", "serve"]
     }
   }
 }
