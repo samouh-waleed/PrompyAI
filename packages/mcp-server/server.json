@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.samouh-waleed/prompyai",
+  "description": "Scores your prompts against your real codebase — context-aware prompt intelligence",
+  "repository": {
+    "url": "https://github.com/samouh-waleed/PrompyAI",
+    "source": "github",
+    "subfolder": "packages/mcp-server"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "prompyai-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Anthropic API key for AI-powered suggestions (optional — free heuristic scoring works without it)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "ANTHROPIC_API_KEY"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 {
   "name": "prompyai-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "mcpName": "io.github.samouh-waleed/prompyai",
   "description": "Context-aware prompt intelligence MCP server for Claude CLI — scores your prompts against your real codebase",
   "type": "module",
   "bin": {
