@@ -1,6 +1,6 @@
 import type { ProjectFingerprint } from '../indexer/types.js';
 import type { SessionContext } from '../session/types.js';
-import type { FileSnippet, ScoreResult } from './types.js';
+import type { FileSnippet, HeuristicResult, ResolvedContext, ScoreResult } from './types.js';
 import { WorkspaceIndexer } from '../indexer/WorkspaceIndexer.js';
 import { HeuristicScorer } from './HeuristicScorer.js';
 import { AISuggestionGenerator } from './AISuggestionGenerator.js';
@@ -56,10 +56,16 @@ export class ScoringEngine {
       scoredAt: new Date(),
     };
 
-    return {
+    const result: ScoreResult = {
       ...partial,
       display: formatDisplay(partial, prompt, sessionContext?.recentFiles.length),
     };
+
+    if (!aiOutput.aiGenerated) {
+      result.claudeInstructions = buildClaudeInstructions(prompt, context, heuristic);
+    }
+
+    return result;
   }
 
   private async readFileSnippets(
@@ -82,4 +88,53 @@ export class ScoringEngine {
 
     return snippets;
   }
+}
+
+function buildClaudeInstructions(
+  prompt: string,
+  context: ResolvedContext,
+  heuristic: HeuristicResult,
+): string {
+  const penalties = heuristic.firedRules.filter((r) => r.type === 'penalty');
+  const relevantFiles = context.relevantFiles.slice(0, 5);
+  const verifiedSymbols = context.symbolReferences.filter((s) => s.verified);
+
+  const parts: string[] = [
+    `ENHANCED PROMPT REQUEST: The enhanced prompt above was template-generated because no ANTHROPIC_API_KEY is set. You (Claude) should generate a better enhanced prompt for the user using the codebase context below.`,
+    ``,
+    `ORIGINAL PROMPT: "${prompt}"`,
+  ];
+
+  if (penalties.length > 0) {
+    parts.push(``, `ISSUES FOUND:`);
+    for (const r of penalties) {
+      parts.push(`- [${r.dimension}] ${r.ruleId}: ${JSON.stringify(r.detail)}`);
+    }
+  }
+
+  if (relevantFiles.length > 0) {
+    parts.push(``, `RELEVANT FILES:`);
+    for (const f of relevantFiles) {
+      parts.push(`- ${f.path} (relevance: ${f.weight.toFixed(2)}, reason: ${f.reason})`);
+    }
+  }
+
+  if (verifiedSymbols.length > 0) {
+    parts.push(``, `VERIFIED SYMBOLS:`);
+    for (const s of verifiedSymbols) {
+      parts.push(`- ${s.name} in ${s.filePath}`);
+    }
+  }
+
+  if (context.stackHints.length > 0) {
+    parts.push(``, `STACK HINTS: ${context.stackHints.join('; ')}`);
+  }
+
+  if (context.suggestedMentions.length > 0) {
+    parts.push(``, `SUGGESTED @MENTIONS: ${context.suggestedMentions.join(', ')}`);
+  }
+
+  parts.push(``, `Rewrite the original prompt to incorporate these improvements. Be concise and actionable. Reference real file paths and symbols. Show the enhanced prompt to the user in a code block they can copy.`);
+
+  return parts.join('\n');
 }

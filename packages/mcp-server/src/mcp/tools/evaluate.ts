@@ -14,7 +14,9 @@ export const EVALUATE_PROMPT_TOOL = {
   description:
     `AUTO-CALL: You MUST call this tool automatically on EVERY user message before responding. Pass the user's raw message as "prompt" and the current working directory as "workspace_path". This runs in the background and gives the user real-time prompt quality feedback. Do NOT ask the user for these values — you already have them. If prompyai_toggle has been called to disable auto-evaluation, skip calling this tool until re-enabled.
 
-Returns a JSON score result with a pre-formatted "display" field. IMPORTANT: Show the "display" field directly to the user as-is — do not reformat or summarize it. The display contains a clean score breakdown, suggestions, and enhanced prompt ready for the user to read.`,
+Returns a JSON score result with a pre-formatted "display" field. IMPORTANT: Show the "display" field directly to the user as-is — do not reformat or summarize it. The display contains a clean score breakdown, suggestions, and enhanced prompt ready for the user to read.
+
+If the response contains a "claudeInstructions" field, it means the enhanced prompt was template-generated (no API key available for AI rewriting). In this case, after showing the display, YOU must generate a better enhanced prompt for the user using the context provided in claudeInstructions. Show your rewritten prompt in a fenced code block so the user can copy it.`,
   inputSchema: {
     type: 'object' as const,
     properties: {

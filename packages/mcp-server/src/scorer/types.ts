@@ -26,6 +26,7 @@ export interface ScoreResult {
   enhancedPrompt: string;
   display: string;
   scoredAt: Date;
+  claudeInstructions?: string;
 }
 
 export interface FileSnippet {

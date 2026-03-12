@@ -3,9 +3,10 @@ import type { ProjectFingerprint } from '../indexer/types.js';
 import type { FileSnippet, FiredRule, HeuristicResult, ResolvedContext, Suggestion } from './types.js';
 import { log, logError } from '../utils/logger.js';
 
-interface AIGeneratorOutput {
+export interface AIGeneratorOutput {
   suggestions: Suggestion[];
   enhancedPrompt: string;
+  aiGenerated: boolean;
 }
 
 const TIMEOUT_MS = 5000;
@@ -209,6 +210,7 @@ Rules:
       return {
         suggestions: validSuggestions.slice(0, 5),
         enhancedPrompt: parsed.enhancedPrompt || originalPrompt,
+        aiGenerated: true,
       };
     } catch {
       logError('Failed to parse AI response as JSON');
@@ -236,7 +238,7 @@ Rules:
 
     const enhancedPrompt = buildSmartEnhancedPrompt(originalPrompt, heuristic, sorted, context);
 
-    return { suggestions: sorted, enhancedPrompt };
+    return { suggestions: sorted, enhancedPrompt, aiGenerated: false };
   }
 }
 
