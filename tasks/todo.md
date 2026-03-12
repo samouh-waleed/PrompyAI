@@ -78,6 +78,11 @@
 - [x] pnpm build — clean build
 
 ## Section 8: Publish
-- [ ] npm publish
-- [ ] MCP server directory submission
-- [ ] Distribution channels
+- [x] npm publish (prompyai-mcp@0.1.1 — 2026-03-12)
+- [x] MCP Registry submission (io.github.samouh-waleed/prompyai — 2026-03-12)
+- [ ] Distribution channels (Reddit, X, HN, Dev.to)
+
+## Section 9: Post-Launch
+- [ ] Session auto-detect from workspace_path (plan: smooth-spinning-frost.md)
+- [ ] Landing page (packages/landing/, prompyai.com)
+- [ ] Q6 session context walkthrough / documentation

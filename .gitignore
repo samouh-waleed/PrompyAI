@@ -35,3 +35,9 @@ pnpm-debug.log*
 
 # npm
 *.tgz
+
+# MCP Registry tokens
+.mcpregistry_*
+
+# mcp-publisher binary
+mcp-publisher
