@@ -173,7 +173,9 @@ PrompyAI reads Claude Code's JSONL session transcripts for multi-turn awareness:
 **Input:** `{ enabled }`
 **Output:** Status confirmation. Controls whether Claude auto-calls evaluate_prompt.
 
-## AI Integration Architecture
+## AI Integration Architecture — Works for Everyone
+
+All users get AI-enhanced output. No separate API key required.
 
 ```
                     ┌──────────────────────────┐
@@ -183,19 +185,36 @@ PrompyAI reads Claude Code's JSONL session transcripts for multi-turn awareness:
            ┌───────────────────┼───────────────────┐
            ▼                   ▼                    ▼
  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐
- │  Happy Path  │   │  No API Key  │   │  Rate Limited  │
- │  Claude API  │   │  Smart       │   │  or Timeout    │
- │  → JSON      │   │  Templates   │   │  → Templates   │
- └──────────────┘   └──────────────┘   └────────────────┘
+ │  API Key Set │   │  No API Key  │   │  Rate Limited  │
+ │  Claude API  │   │  Claude-as-  │   │  or Timeout    │
+ │  → Direct AI │   │  AI-layer    │   │  → Templates   │
+ └──────┬───────┘   └──────┬───────┘   └────────┬───────┘
+        │                   │                     │
+        ▼                   ▼                     ▼
+  aiGenerated:true    aiGenerated:false     aiGenerated:false
+  enhancedPrompt      claudeInstructions    template fallback
+  from Haiku          → host Claude         with real paths
+                      generates rewrite
 ```
 
-**Smart template fallback** (no API key / rate limited):
+### Path 1: API Key Users (`ANTHROPIC_API_KEY` set)
+PrompyAI calls Claude Haiku directly → fully rewritten enhanced prompt grounded in project context, file snippets, and code symbols. Returned in `enhancedPrompt` field.
+
+### Path 2: Claude-as-AI-Layer (no API key — default)
+PrompyAI builds structured codebase context (`claudeInstructions` field) containing:
+- Fired scoring rules with explanations
+- Relevant files from the project
+- Verified code symbols with file locations
+- Stack-specific hints and suggested @mentions
+
+The host Claude (user's existing session) reads `claudeInstructions` and generates the enhanced prompt itself. Users get AI-quality rewrites without needing their own API key.
+
+### Path 3: Rate Limited / Timeout
+Falls back to smart template-based suggestions:
 - Injects real file paths from project context
 - Injects verified code symbols with file locations
 - Adds structured placeholders for expected/actual behavior
 - Deduplicates on re-scoring (won't repeat itself)
-
-**AI path** (with API key): Claude Haiku generates fully rewritten enhanced prompts grounded in project context, file snippets, and code symbols.
 
 ## Services & Dependencies
 
