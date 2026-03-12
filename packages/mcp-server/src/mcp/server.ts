@@ -102,15 +102,13 @@ process.on('unhandledRejection', (error) => {
   logError('Unhandled rejection', error);
 });
 
-// Graceful shutdown — flush telemetry
-process.on('SIGINT', () => {
-  telemetry.shutdown();
+// Graceful shutdown — flush telemetry before exit
+const gracefulShutdown = async () => {
+  await telemetry.shutdown();
   process.exit(0);
-});
-process.on('SIGTERM', () => {
-  telemetry.shutdown();
-  process.exit(0);
-});
+};
+process.on('SIGINT', () => { gracefulShutdown(); });
+process.on('SIGTERM', () => { gracefulShutdown(); });
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

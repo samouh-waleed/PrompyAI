@@ -36,6 +36,8 @@ class TelemetryClient {
     }
   }
 
+  private static readonly IMMEDIATE_EVENTS = new Set(['server_start']);
+
   track(event: string, properties?: Record<string, string | number | boolean>): void {
     if (!this.enabled) return;
 
@@ -47,7 +49,7 @@ class TelemetryClient {
       properties,
     });
 
-    if (this.buffer.length >= MAX_BATCH_SIZE) {
+    if (this.buffer.length >= MAX_BATCH_SIZE || TelemetryClient.IMMEDIATE_EVENTS.has(event)) {
       this.flush();
     }
   }
@@ -75,13 +77,12 @@ class TelemetryClient {
     }
   }
 
-  shutdown(): void {
+  async shutdown(): Promise<void> {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
     }
-    // Best-effort final flush
-    this.flush().catch(() => {});
+    await this.flush();
   }
 }
 
