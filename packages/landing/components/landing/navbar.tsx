@@ -3,6 +3,7 @@
 import { Menu, X, ArrowRight, Github } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+
 import {
   motion,
   AnimatePresence,
