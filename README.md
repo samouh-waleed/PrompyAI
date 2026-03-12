@@ -1,63 +1,102 @@
-# PrompyAI
+<p align="center">
+  <img src="packages/landing/public/logo.png" alt="PrompyAI" width="120" />
+</p>
 
-Context-aware prompt intelligence MCP server for Claude CLI. Scores developer prompts against their real codebase, suggests improvements, and rewrites enhanced prompts.
+<h1 align="center">PrompyAI</h1>
 
-## How It Works
+<p align="center">
+  Context-aware prompt intelligence for Claude CLI.<br/>
+  Scores your prompts against your real codebase — file paths, symbols, session history — and rewrites them with AI.
+</p>
 
-When you write a prompt in Claude CLI, PrompyAI automatically evaluates it against your actual project — files, tech stack, conventions, session history — and returns a score with actionable suggestions.
+<p align="center">
+  <a href="https://www.npmjs.com/package/prompyai-mcp"><img src="https://img.shields.io/npm/v/prompyai-mcp" alt="npm" /></a>
+  <a href="https://github.com/samouh-waleed/PrompyAI/blob/main/LICENSE"><img src="https://img.shields.io/github/license/samouh-waleed/PrompyAI" alt="license" /></a>
+  <a href="https://prompyai.com"><img src="https://img.shields.io/badge/website-prompyai.com-7c3aed" alt="website" /></a>
+</p>
+
+---
+
+## What It Does
+
+When you write a prompt in Claude CLI, PrompyAI automatically evaluates it against your actual project and returns:
+
+- **Score** (0–100) across 4 dimensions
+- **Suggestions** tailored to your project
+- **AI-enhanced prompt** rewritten with real file paths, verified symbols, and codebase context
 
 ```
-Prompt Score: 28/100 [F]
-Session context: 12 file references carried forward
+Prompt Score: 43/100 [D]
 
-  Specificity        6/25  ===...........
-  Context            5/25  ==............
-  Clarity           10/25  ======........
-  Anchoring          7/25  ====..........
+  Specificity         3/25  ==..............
+  Context Completeness 13/25  ========........
+  Task Clarity        15/25  =========.......
+  File & Folder Anchoring 10/25  ======..........
 
-This prompt is too vague for good results. Critical fixes:
-  1. Replace "fix" with what's actually broken
-     > "debug the JWT validation error in @src/middleware/auth.ts"
-  2. Describe expected vs actual behavior
-     > "should return 200 but returns 401 when token has role claim"
+Key improvements:
+  1. Expand your prompt with more context
+  2. Add file paths using @mentions
+  3. Specify what format you expect the output in
+  4. Add acceptance criteria
 
-Enhanced prompt:
-```​
-In @src/middleware/auth.ts, the JWT validation returns 401 for valid
-tokens. Update validateToken to extract the role claim correctly.
-Ensure existing vitest tests pass.
-```​
+Try something more like:
+
+  "Build the VS Code extension in packages/vscode-extension/ that integrates
+   with the PrompyAI MCP server at packages/mcp-server/. It should provide
+   real-time prompt scoring in the editor sidebar, show score breakdowns
+   (specificity, context, clarity, anchoring), and offer a 'rewrite prompt'
+   action. Use the shared types from packages/shared/."
 ```
 
 ## Quick Start
 
 ```bash
-# Zero-install (recommended)
 claude mcp add prompyai -- npx prompyai-mcp serve
-
-# Or install globally first
-npm install -g prompyai-mcp
-claude mcp add prompyai -- prompyai serve
 ```
 
-```json
-{
-  "mcpServers": {
-    "prompyai": {
-      "command": "npx",
-      "args": ["prompyai-mcp", "serve"]
-    }
-  }
-}
-```
+That's it. No sign-up, no config files. Works immediately.
 
-Requires Node.js 20+.
+Requires Node.js 20+ and Claude CLI.
+
+## How AI Enhancement Works
+
+PrompyAI uses a two-layer architecture so **all users get AI-enhanced output**:
+
+| User type | How it works |
+|-----------|-------------|
+| **API key users** (`ANTHROPIC_API_KEY` set) | PrompyAI calls Claude Haiku directly for fast, dedicated AI rewrites |
+| **Subscription users** (no API key) | PrompyAI returns codebase context to Claude, and Claude itself generates the enhanced prompt using your existing session |
+
+Either way, the enhanced prompt is grounded in your real project — actual file paths, verified function names, and project architecture.
+
+## Scoring Dimensions
+
+Each dimension scores 0–25, total 0–100.
+
+| Dimension | What it measures |
+|-----------|-----------------|
+| **Specificity** | Concrete actions vs vague verbs, output format, quantitative constraints |
+| **Context Completeness** | File references, error messages, expected vs actual behavior |
+| **Task Clarity** | Single focused task, success criteria, unambiguous language |
+| **File & Folder Anchoring** | @mentions, project entity references, verified symbol names |
+
+**Grades:** A (90+) · B (70+) · C (50+) · D (30+) · F (<30)
+
+## Features
+
+- **Auto-scoring** — Evaluates every prompt automatically, no manual trigger needed
+- **AI-enhanced for everyone** — API key users get Haiku rewrites; subscription users get Claude-powered rewrites via codebase context
+- **Context-aware** — Indexes your file tree, tech stack, git state, and code symbols via the TypeScript Compiler API
+- **Session-aware** — Reads Claude Code conversation history for multi-turn context
+- **Symbol verification** — Confirms that function/class names you reference actually exist in your code
+- **Monorepo support** — Detects tech stacks across workspace packages
+- **Toggle** — Say "pause prompyai" or "enable prompyai" at any time
 
 ## MCP Tools
 
 ### `evaluate_prompt`
 
-Automatically called on every user message. Scores your prompt and returns suggestions.
+Automatically called on every user message. Scores your prompt against your project.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -68,7 +107,7 @@ Automatically called on every user message. Scores your prompt and returns sugge
 
 ### `get_context`
 
-Returns a summary of your project: detected tech stack, recently modified files, key folders, and AI instruction summaries.
+Returns your project summary: tech stack, recent files, key folders, AI instruction files.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -76,100 +115,56 @@ Returns a summary of your project: detected tech stack, recently modified files,
 
 ### `prompyai_toggle`
 
-Turns auto-evaluation on or off. Enabled by default.
+Turns auto-evaluation on or off.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `enabled` | yes | `true` to enable, `false` to disable |
 
-## Scoring Dimensions
-
-Each dimension scores 0-25, total 0-100.
-
-| Dimension | Measures |
-|-----------|----------|
-| **Specificity** | Concrete actions vs vague verbs, output format, constraints |
-| **Context** | File references, error messages, expected vs actual behavior |
-| **Clarity** | Single focused task, success criteria, unambiguous language |
-| **Anchoring** | File paths, project entity references, hot file mentions |
-
-**Grades:** A (90+), B (70+), C (50+), D (30+), F (<30)
-
-## Features
-
-- **Auto-scoring** — Evaluates every prompt automatically, no manual trigger needed
-- **Session-aware** — Reads Claude Code JSONL transcripts for multi-turn context
-- **Multi-agent aware** — Includes subagent research in context scoring
-- **Monorepo support** — Detects tech stacks across workspace packages
-- **AI-powered suggestions** — Claude Haiku generates context-aware improvements (with API key)
-- **Template fallback** — Heuristic-only mode works without an API key
-- **Rate limiting** — 100 AI calls/day per machine, heuristic fallback when exceeded
-- **Anonymous telemetry** — Usage stats only (hashed machine ID, no PII)
-- **Toggle** — Turn auto-evaluation on/off at any time
-
-## AI-Powered Suggestions
-
-When `ANTHROPIC_API_KEY` is set, PrompyAI uses Claude Haiku to generate suggestions grounded in your project structure. Without an API key, it falls back to template-based suggestions.
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-```
-
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | No | Enables AI-powered suggestions via Claude Haiku |
+| `ANTHROPIC_API_KEY` | No | Enables direct AI suggestions via Claude Haiku (optional — works without it) |
 | `PROMPYAI_TELEMETRY` | No | Set to `false` to opt out of anonymous telemetry |
-| `PROMPYAI_TELEMETRY_URL` | No | Override telemetry endpoint URL |
 
-## CLI Commands
-
-```bash
-prompyai serve              # Start the MCP server (default)
-prompyai doctor             # Run environment diagnostics
-  --workspace <path>        # Workspace to check (default: cwd)
-```
-
-## Rate Limits
-
-PrompyAI includes built-in rate limiting to manage API costs:
-
-- **Per machine:** 100 AI-enhanced evaluations per day
-- **Global:** Monthly cost cap (~$500)
-- **When limits hit:** Scoring continues with heuristic-only mode (no AI suggestions)
-
-## Monorepo Structure
+## Architecture
 
 ```
 PrompyAI/
 ├── packages/
 │   ├── mcp-server/     ← Core product (npm: prompyai-mcp)
-│   ├── landing/        ← Future: prompyai.com
-│   └── shared/         ← Future: shared types for IDE extensions
+│   ├── landing/        ← Website (prompyai.com)
+│   └── shared/         ← Shared types for future IDE extensions
 ├── CLAUDE.md
-├── ARCHITECTURE.md
 └── README.md
+```
+
+### Scoring Pipeline
+
+```
+User prompt
+  → WorkspaceIndexer (file tree, stack, symbols)
+  → ContextResolver (map prompt to codebase)
+  → HeuristicScorer (20+ rules, 4 dimensions)
+  → AISuggestionGenerator (Haiku or Claude-as-AI-layer)
+  → DisplayFormatter (pre-formatted output)
 ```
 
 ## Development
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Run tests (220 tests)
-pnpm test
-
-# Type check
-pnpm typecheck
-
-# Build
-pnpm build
-
-# Test with MCP Inspector
-npx @modelcontextprotocol/inspector npx tsx packages/mcp-server/src/mcp/server.ts
+pnpm install          # Install dependencies
+pnpm test             # Run tests (220 tests)
+pnpm typecheck        # Type check
+pnpm build            # Build
 ```
+
+## Links
+
+- **Website:** [prompyai.com](https://prompyai.com)
+- **npm:** [prompyai-mcp](https://www.npmjs.com/package/prompyai-mcp)
+- **MCP Registry:** [io.github.samouh-waleed/prompyai](https://registry.modelcontextprotocol.io)
 
 ## License
 
